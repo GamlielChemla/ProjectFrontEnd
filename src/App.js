@@ -1,20 +1,107 @@
 import React, { Component } from "react";
 import "./App.css";
-// import {button,Alert,Input,te}from 'reactstrap'
-// import 'bootstrap/dist/css/bootstrap.min.css';
-// import Connection from './myconect/Connection'
+
 import axios from "axios";
 
-import MySelect from "./components/mySelect";
+import MySelect from "./components/MySelect/MySelect";
+
+import NewRisk from "./components/NewRisk/NewRisk";
 
 class App extends Component {
-  state = { risks:[{riskName:"delay"},{riskName:"test"},{riskName:"budget"},{riskName:"customer"}]  };
-
-  addRiskToDataBase = e => {
-    let name = e.target.elements.riskName.value;
-    console.log(name);
+  state = {
+    risks: [
+      {
+        riskName: "delay",
+        probability: 0,
+        concequence: 0,
+        mitigation: "",
+        reasons: ""
+      },
+      {
+        riskName: "test",
+        probability: 0,
+        concequence: 0,
+        mitigation: "",
+        reasons: ""
+      },
+      {
+        riskName: "budget",
+        probability: 0,
+        concequence: 0,
+        mitigation: "",
+        reasons: ""
+      },
+      {
+        riskName: "customer",
+        probability: 0,
+        concequence: 0,
+        mitigation: "",
+        reasons: ""
+      }
+    ]
   };
 
+  addNewRisk = e => {
+    e.preventDefault();
+
+    let newRisk = e.target.elements.myInput.value;
+
+    let check = true;
+
+    let newState = this.state.risks.slice();
+
+    for (let i = 0; i < newState.length; i++) {
+      if (newState[i].riskName === newRisk) {
+        check = false;
+      }
+    }
+
+    if (check) {
+      newState = [
+        ...newState,
+        {
+          riskName: newRisk,
+          probability: 0,
+          concequence: 0,
+          mitigation: "",
+          reasons: ""
+        }
+      ];
+
+      this.setState({ risks: newState });
+    }
+  };
+
+  removeRisk = name => {
+    let newState = this.state.risks.slice();
+
+    const myIndex = newState.findIndex(elem => {
+      return elem.riskName === name;
+    });
+
+    newState.splice(myIndex, 1);
+
+    this.setState({ risks: newState });
+  };
+
+  addDataToState = (name,e) =>{
+    
+    let myKey = e.target.name; 
+
+    let newState = this.state.risks.slice();
+
+    const myIndex = newState.findIndex(elem => {
+      return elem.riskName === name;
+    });
+
+    newState[myIndex][myKey]=e.target.value
+
+    this.setState({ risks: newState });
+     
+    
+  }
+
+  
   componentDidMount() {
     axios.get("/EndPage").then(response => {
       this.setState({
@@ -26,20 +113,25 @@ class App extends Component {
     });
   }
 
-  render() {
 
-    const mySelectsList = this.state.risks.map((item, index) =>
-      <MySelect riskName={item.riskName} myMethod ={this.addRiskToDataBase}   />
-    )
+  render() {
+    const mySelectsList = this.state.risks.map((item, index) => (
+      <MySelect
+        riskName={item.riskName}
+        removeRisk={this.removeRisk}
+        addDataToState={this.addDataToState}
+        key={index + " " + item.riskName}
+      />
+    ));
     return (
       <div className="App">
-        
         {mySelectsList}
 
+        <NewRisk addNewRisk={this.addNewRisk} />
 
-        <button className="save" type="submit" onClick={this.postHandle}>
+        {/* <button className="save" type="submit" onClick={this.postHandle}>
           save
-        </button>
+        </button> */}
       </div>
     );
   }
