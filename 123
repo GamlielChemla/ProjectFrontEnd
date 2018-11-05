@@ -1,0 +1,27 @@
+ postHandle = () => {
+    let data = [];
+
+    this.state.risks.map((elem) => {
+      data.push({
+        riskName: elem.riskName,
+        [elem.riskName + " " + "probability"]: elem.probability,
+        [elem.riskName + " " + "concequence"]: elem.concequence,
+        [elem.riskName + " " + "reasons"]: elem.reasons,
+        [elem.riskName + " " + "mitigation"]: elem.mitigation,
+      })
+      // console.log(data);
+
+    })
+
+    this.setState({ data: data })
+    axios.post("/second", this.state.data)
+      .then(response =>
+
+        console.log(response.data)
+
+
+      ).catch(err => {
+        console.log(err.message);
+
+      })
+  }
